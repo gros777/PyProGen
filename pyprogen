@@ -1,0 +1,163 @@
+#!/bin/bash
+
+########################################
+#           FUNCTIONS                  #
+########################################
+
+fill_setup_file(){
+	# setup.py file content
+	echo "try:" >> setup.py
+	echo "    from setuptools import setup" >> setup.py
+	echo "except ImportError:" >> setup.py
+	echo "    from distutils.core import setup" >> setup.py
+	echo "" >> setup.py
+	echo "config = {" >> setup.py
+	echo "    'description': '$1'," >> setup.py
+	echo "    'author': 'Victor A. Hernandez'," >> setup.py
+	echo "    'url': '$1.victorhernandez.me.'," >> setup.py
+	echo "    'download_url': '$1.victorhernandez.me/download'," >> setup.py
+	echo "    'author_email': 'mail@victorhernandez.me.'," >> setup.py
+	echo "    'version': '0.1'," >> setup.py
+	echo "    'install_requires': ['nose']," >> setup.py
+	echo "    'packages': ['$1']," >> setup.py
+	echo "    'scripts': []," >> setup.py
+        echo "    'name': '$1'" >> setup.py
+	echo "}" >> setup.py
+	echo "" >> setup.py
+	echo "setup(**config)" >> setup.py
+}
+
+fill_test_file(){
+	# project_test.py file content
+	echo "from nose.tools import *" >> tests/$2
+	echo "import $1" >> tests/$2
+
+	echo "def setup():" >> tests/$2
+	echo "    print \"SETUP!\"" >> tests/$2
+
+	echo "def teardown():" >> tests/$2
+	echo "    print \"TEAR DOWN!\"" >> tests/$2
+
+	echo "def test_basic():" >> tests/$2
+        echo "    print \"I RAN!\"" >> tests/$2
+}
+
+allready_exist(){
+	local type=$1
+	local name=$2
+
+	if [ $type ==  $FILE ]
+	then
+		echo "The file $name allready existe, omited"
+	elif [ $type == $DIR ]; then
+		echo "The directory $name allready exists, omited"
+	else
+		echo "type error"
+	fi
+}
+
+create_files(){
+	
+	local new_dir_name=$1;
+	# creating the python init files
+	cd $new_dir_name
+	local init_file=__init__.py
+
+	# main module init
+	if [ ! -f $new_dir_name/$init_file ]
+	then
+		touch $new_dir_name/$init_file 
+	else
+		allready_exist $FILE $new_dir_name/$init_file
+	fi
+	
+	# test init file
+	if [ ! -f tests/$init_file ]
+	then
+		touch tests/$init_file
+	else
+		allready_exist $FILE $init_file
+	fi
+	
+	# generating the setup.py file for the project
+	local setup_file=setup.py
+	if [ ! -f $setup_file ]
+	then
+		touch $setup_file
+		fill_setup_file $new_dir_name
+	else
+		echo "The file setup.py file allready existe, omited"
+	fi
+	
+	# generating the principal init file for the project
+	local test_file=$(echo "$new_dir_name"_tests.py)
+	
+	if [ ! -f tests/$test_file ]
+	then
+		touch tests/$test_file
+		fill_test_file $new_dir_name $test_file
+	else
+		allready_exist $FILE $test_file
+	fi
+
+	cd ..
+}
+
+create_dir_structure(){
+	
+	local new_dir_name=$1;
+	# creating the main project directory and directory structure
+	if [ ! -d $new_dir_name ]
+	then	
+		mkdir -p $new_dir_name/{$new_dir_name,bin,docs,tests}
+	else
+		allready_exist $DIR $new_dir_name
+		
+		cd $new_dir_name
+		if [ ! -d $new_dir_name ]; then
+			mkdir $new_dir_name
+		else
+			allready_exist $DIR $new_dir_name
+		fi
+
+		if [ ! -d bin ]; then
+			mkdir bin
+		else
+			allready_exist $DIR "bin"
+		fi
+
+		if [ ! -d docs ]; then
+			mkdir docs
+		else
+			allready_exist $DIR "docs"
+		fi
+
+		if [ ! -d tests ]; then
+			mkdir tests
+		else
+			allready_exist $DIR "tests"
+		fi
+
+		cd ..	
+	fi
+	
+}
+
+########################################
+#                MAIN                  #
+########################################
+main(){
+	local project_name=${ARGS[0]}
+	create_dir_structure $project_name
+	create_files $project_name
+	echo "generated structure"
+	tree $project_name
+	cd $project_name
+	echo "testing the project with nosetests"
+	nosetests
+}
+
+readonly ARGS=("$@")
+readonly DIR="D"
+readonly FILE="F"
+main
