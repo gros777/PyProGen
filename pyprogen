@@ -6,40 +6,47 @@
 
 fill_setup_file(){
 	# setup.py file content
-	echo "try:" >> setup.py
-	echo "    from setuptools import setup" >> setup.py
-	echo "except ImportError:" >> setup.py
-	echo "    from distutils.core import setup" >> setup.py
-	echo "" >> setup.py
-	echo "config = {" >> setup.py
-	echo "    'description': 'About the project'," >> setup.py
-	echo "    'author': 'Author name'," >> setup.py
-	echo "    'url': 'project url.'," >> setup.py
-	echo "    'download_url': 'Where to get the project'," >> setup.py
-	echo "    'author_email': 'Contact mail.'," >> setup.py
-	echo "    'version': '0.1'," >> setup.py
-	echo "    'install_requires': ['nose']," >> setup.py
-	echo "    'packages': ['$1']," >> setup.py
-	echo "    'scripts': []," >> setup.py
-        echo "    'name': '$1'" >> setup.py
-	echo "}" >> setup.py
-	echo "" >> setup.py
-	echo "setup(**config)" >> setup.py
+	read -r -d '' setup_file_content <<- EOF
+
+	try:
+	    from setuptools import setup
+	except ImportError:
+	    from distutils.core import setup
+	
+	config = {
+	    'description': 'About the project',
+	    'author': 'Author name',
+	    'url': 'project url.',
+	    'download_url': 'Where to get the project',
+	    'author_email': 'Contact mail.',
+	    'version': '0.1',
+	    'install_requires': ['nose'],
+	    'packages': ['$1'],
+	    'scripts': [],
+	    'name': '$1'
+	}
+	
+	setup(**config)
+	EOF
+	echo "$setup_file_content" >> setup.py
 }
 
 fill_test_file(){
 	# project_test.py file content
-	echo "from nose.tools import *" >> tests/$2
-	echo "import $1" >> tests/$2
+	read -r -d '' test_file_content <<- EOF
+	from nose.tools import *
+	import $1
 
-	echo "def setup():" >> tests/$2
-	echo "    print \"SETUP!\"" >> tests/$2
+	def setup():
+	    print "SETUP!"
 
-	echo "def teardown():" >> tests/$2
-	echo "    print \"TEAR DOWN!\"" >> tests/$2
+	def teardown():
+	    print "TEAR DOWN!"
 
-	echo "def test_basic():" >> tests/$2
-        echo "    print \"I RAN!\"" >> tests/$2
+	def test_basic():
+	    print "I RAN!"
+	EOF
+	echo "$test_file_content" > tests/$2
 }
 
 allready_exist(){
