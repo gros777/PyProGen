@@ -6,8 +6,8 @@
 
 fill_setup_file(){
 	# setup.py file content
+	local project_name=$1
 	read -r -d '' setup_file_content <<- EOF
-
 	try:
 	    from setuptools import setup
 	except ImportError:
@@ -21,21 +21,24 @@ fill_setup_file(){
 	    'author_email': 'Contact mail.',
 	    'version': '0.1',
 	    'install_requires': ['nose'],
-	    'packages': ['$1'],
+	    'packages': ['$project_name'],
 	    'scripts': [],
-	    'name': '$1'
+	    'name': '$project_name'
 	}
 	
 	setup(**config)
 	EOF
-	echo "$setup_file_content" >> setup.py
+	echo "$setup_file_content" > setup.py
 }
 
 fill_test_file(){
 	# project_test.py file content
+	local project_name=$1
+	local test_file=tests/$2
+
 	read -r -d '' test_file_content <<- EOF
 	from nose.tools import *
-	import $1
+	import $project_name
 
 	def setup():
 	    print "SETUP!"
@@ -46,7 +49,7 @@ fill_test_file(){
 	def test_basic():
 	    print "I RAN!"
 	EOF
-	echo "$test_file_content" > tests/$2
+	echo "$test_file_content" > $test_file
 }
 
 allready_exist(){
@@ -55,11 +58,9 @@ allready_exist(){
 
 	if [ $type ==  $FILE ]
 	then
-		echo "The file $name allready existe, omited"
-	elif [ $type == $DIR ]; then
-		echo "The directory $name allready exists, omited"
+		echo "The file $name allready exists, omitted"
 	else
-		echo "type error"
+		echo "The directory $name allready exists, omitted"
 	fi
 }
 
@@ -96,7 +97,7 @@ create_files(){
 		echo "The file setup.py file allready existe, omited"
 	fi
 	
-	# generating the principal init file for the project
+	# generating a test file for the project
 	local test_file=$(echo "$new_dir_name"_tests.py)
 	
 	if [ ! -f tests/$test_file ]
@@ -162,7 +163,7 @@ usage(){
 #                MAIN                  #
 ########################################
 main(){
-	# testing the parameters, if none exit with error
+	# testing the parameters, if none print usage and exit with error
 	if [ $PAR_NUM -eq 0 ]; then
 		usage
 		exit 1
