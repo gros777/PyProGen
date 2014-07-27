@@ -11,7 +11,7 @@ Just put it in your paht, or wherever you want to useit, give it execution permi
 Usage
 -----
 
-just pass the name of the new project to the script, for example:
+Pass the name of the new project to the script, for example:
 
 $> pyprogen skeleton
 
@@ -42,6 +42,9 @@ Ran 1 test in 0.009s
 OK
 
 The script generate a setup.py file that contains the general information for the project, this information have to be modified to your needs.
+
+NOTE: the files with extension .pyc are generated from the test execution
+      
 
 Contribute
 ----------

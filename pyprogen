@@ -12,11 +12,11 @@ fill_setup_file(){
 	echo "    from distutils.core import setup" >> setup.py
 	echo "" >> setup.py
 	echo "config = {" >> setup.py
-	echo "    'description': '$1'," >> setup.py
-	echo "    'author': 'Victor A. Hernandez'," >> setup.py
-	echo "    'url': '$1.victorhernandez.me.'," >> setup.py
-	echo "    'download_url': '$1.victorhernandez.me/download'," >> setup.py
-	echo "    'author_email': 'mail@victorhernandez.me.'," >> setup.py
+	echo "    'description': 'About the project'," >> setup.py
+	echo "    'author': 'Author name'," >> setup.py
+	echo "    'url': 'project url.'," >> setup.py
+	echo "    'download_url': 'Where to get the project'," >> setup.py
+	echo "    'author_email': 'Contact mail.'," >> setup.py
 	echo "    'version': '0.1'," >> setup.py
 	echo "    'install_requires': ['nose']," >> setup.py
 	echo "    'packages': ['$1']," >> setup.py
