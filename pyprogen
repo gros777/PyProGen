@@ -41,13 +41,13 @@ fill_test_file(){
 	import $project_name
 
 	def setup():
-	    print "SETUP!"
+	    print ("SETUP!")
 
 	def teardown():
-	    print "TEAR DOWN!"
+	    print ("TEAR DOWN!")
 
 	def test_basic():
-	    print "I RAN!"
+	    print ("I RAN!")
 	EOF
 	echo "$test_file_content" > $test_file
 }
